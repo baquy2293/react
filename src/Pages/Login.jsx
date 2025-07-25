@@ -1,9 +1,7 @@
 import React from "react";
 import { Button, Checkbox, Form, Input } from "antd";
+import axios from "axios";
 
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
@@ -11,6 +9,7 @@ const onFinishFailed = (errorInfo) => {
 const App = () => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const delay = 500;
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
@@ -19,9 +18,19 @@ const App = () => {
     setPassword(e.target.value);
   };
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted Username:", username);
-    console.log("Submitted Password:", password);
+    axios
+      .post("http://localhost:8080/api/v1/auth/login", {
+        username,
+        password,
+        delay,
+      })
+      .then((response) => {
+        // In kết quả trả về từ API
+        console.log("API Response:", response.data);
+      })
+      .catch((error) => {
+        console.error("Có lỗi xảy ra:", error);
+      });
   };
 
   return (
@@ -40,7 +49,7 @@ const App = () => {
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600, width: "100%" }}
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={handleSubmit}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
